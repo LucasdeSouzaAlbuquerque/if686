@@ -97,7 +97,7 @@ menorMaior a b c | (a < b && b < c) = (a,c)
 				 | (c < a && a < b) = (c,b)
 				 | (c < a && b < a) = (c,a)
 	
---tripla ordenada	
+--tripla ordenada
 ordenaTripla :: (Int, Int, Int) -> (Int, Int, Int)
 ordenaTripla (a, b, c) | (a < b && b < c) = (a, b, c)
                        | (a < c && c < b) = (a, c, b)
@@ -127,3 +127,59 @@ vertLine r = (fst (fst r) == fst (snd r))
 		No caso, para um 'x' dado, existirão infinitos pontos nessa reta-}
 pontoY :: Float -> Reta -> Float
 pontoY x r = (((snd (snd r) - snd (fst r)) * (x - fst(fst r))) / (fst (snd r) - fst(fst r))) + snd(fst r)
+
+{-BIBLIOTECA-}
+
+type Pessoa = String
+type Livro = String
+type BancoDados = [(Pessoa, Livro)]
+
+baseExemplo :: BancoDados
+baseExemplo =  [("Sergio","O Senhor dos Aneis"), ("Andre","Duna"), ("Fernando","Jonathan Strange & Mr. Norrell"),  ("Fernando","A Game of Thrones")]
+
+livros :: BancoDados -> Pessoa -> [Livro]
+livros [] pp = []
+livros ((p,l):as) pp | pp == p = l : livros as pp
+			         | otherwise = livros as pp
+
+emprestimos :: BancoDados -> Livro -> [Pessoa]
+emprestimos [] ll = []
+emprestimos ((p,l):as) ll | ll == l = p : emprestimos as ll
+                          | otherwise = emprestimos as ll
+			
+emprestado :: BancoDados -> Livro -> Bool
+emprestado [] ll = False
+emprestado ((p,l):as) ll = ll == l || emprestado as ll
+
+qtdEmprestimos :: BancoDados -> Pessoa -> Int
+qtdEmprestimos [] pp = 0
+qtdEmprestimos ((p,l):as) pp | pp == p = 1 + qtdEmprestimos as pp
+				             | otherwise = qtdEmprestimos as pp
+
+--funções sobre o banco
+emprestar :: BancoDados -> Pessoa -> Livro -> BancoDados
+emprestar [] pp ll = [(pp, ll)]
+emprestar ((p,l):as) pp ll | ll /= l = (p,l) : emprestar as pp ll
+                           | otherwise = (p,l) : as
+
+devolver :: BancoDados -> Pessoa -> Livro -> BancoDados
+devolver [] pp ll = []
+devolver ((p,l):as) pp ll | p == pp && l == ll = as
+                          | otherwise = (p,l) : devolver as pp ll
+						  
+--compreensão de listas
+
+livrosC :: BancoDados -> Pessoa -> [Livro]
+livrosC ls pp = [l | (p, l) <- ls, pp == p]
+
+emprestimosC :: BancoDados -> Livro -> [Pessoa]
+emprestimosC ls ll = [p | (p, l) <- ls, ll == l]
+
+emprestadoC :: BancoDados -> Livro -> Bool
+emprestadoC ls ll = [p | (p, l) <- ls, ll == l] /= []
+
+qtdEmprestimosC :: BancoDados -> Pessoa -> Int
+qtdEmprestimosC ls pp = length [l | (p, l) <- ls, pp == p]
+
+devolverC :: BancoDados -> Pessoa -> Livro -> BancoDados
+devolverC ls pp ll = [(p, l) | (p, l) <- ls, pp /= p || ll /= l]

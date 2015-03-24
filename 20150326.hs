@@ -12,25 +12,26 @@ type HashTable = [(Int, Int)]
 
 --pega um elemento dado uma chave
 get :: HashTable -> Int -> Int
-get ht key | ht == [] = 0
-           | key == fst(head(ht)) = snd(head(ht))
-		   | otherwise = get (tail ht) key
+get [] key = 0
+get ((k,v):as) key | k == key = v
+                   | otherwise = get as key
 		   
 --põe um par chave/elemento na hash
-put :: HashTable -> (Int, Int) -> HashTable
-put ht (key, val) | ht == [] = [(key, val)]
-                  | otherwise = (head ht) : put (tail ht) (key, val)
+put :: HashTable -> Int -> Int -> HashTable
+put [] key val = [(key, val)]
+put ((k,v):as) key val | k /= key = (k,v) : put as key val
+                       | otherwise = (k,v) : as
 
 --tira um elemento dado uma chave
 remove :: HashTable -> Int -> HashTable
-remove ht key | ht == [] = ht
-              | fst(head ht) == key = tail ht
-			  | otherwise = (head ht) : remove (tail ht) key
+remove [] key = []
+remove ((k,v):as) key | k == key = as
+                      | otherwise = (k,v) : remove as key
 				  
 --verifica se uma chave está na hash
 hasKey :: HashTable -> Int -> Bool
-hasKey ht key | ht == [] = False
-              | otherwise = (fst(head ht) == key || hasKey (tail ht) key)
+hasKey [] key = False
+hasKey ((k,v):as) key = k == key || hasKey as key
 				  
 ---------------------------------------------------------------------------------------------
 
