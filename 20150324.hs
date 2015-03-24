@@ -81,13 +81,6 @@ heapsort xs = hpsort ((length xs)-1) (buildHeap (div (length xs) 2) xs)
 
 	--Exercícios Aula 24/03/2015
 
---Algoritmo de Ordenação Quicksort (crescente) para Inteiros. Usar (Ord a) => [a] -> [a] para vários tipos.
-	{-Usando compreensões de listas-}
---Dar uma olhada melhor no funcionamento
-quickSort :: [Int] -> [Int]
-quickSort [] = []
-quickSort (pivot:list) = quickSort [y | y <- list, y < pivot] ++ [pivot] ++ quickSort [y | y <- list, y >= pivot]
-
 --menor e maior inteiros
 menorMaior :: Int -> Int -> Int -> (Int, Int)
 menorMaior a b c | (a < b && b < c) = (a,c)
@@ -128,7 +121,7 @@ vertLine r = (fst (fst r) == fst (snd r))
 pontoY :: Float -> Reta -> Float
 pontoY x r = (((snd (snd r) - snd (fst r)) * (x - fst(fst r))) / (fst (snd r) - fst(fst r))) + snd(fst r)
 
-{-BIBLIOTECA-}
+{-EXERCÍCIOS RELACIONADO À BIBLIOTECA-}
 
 type Pessoa = String
 type Livro = String
@@ -186,3 +179,11 @@ qtdEmprestimosC ls pp = length [l | (p, l) <- ls, pp == p]
 
 devolverC :: BancoDados -> Pessoa -> Livro -> BancoDados
 devolverC ls pp ll = [(p, l) | (p, l) <- ls, pp /= p || ll /= l]
+
+--Algoritmo de Ordenação Quicksort (crescente) para Inteiros. Usar (Ord a) => [a] -> [a] para vários tipos.
+	{-Usando compreensões de listas-}
+--Dar uma olhada melhor no funcionamento
+
+quickSort :: [Int] -> [Int]
+quickSort [] = []
+quickSort (pivot:list) = quickSort [y | y <- list, y < pivot] ++ [pivot] ++ quickSort [y | y <- list, y >= pivot]
