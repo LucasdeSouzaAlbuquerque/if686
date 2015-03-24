@@ -169,6 +169,9 @@ devolver ((p,l):as) pp ll | p == pp && l == ll = as
 						  
 --compreensão de listas
 
+membroC :: [Int] -> Int -> Bool
+membroC ls ii = [i | i <- ls, ii == i] /= []
+
 livrosC :: BancoDados -> Pessoa -> [Livro]
 livrosC ls pp = [l | (p, l) <- ls, pp == p]
 
