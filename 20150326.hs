@@ -8,6 +8,7 @@
 	{-Trabalho 3, Questão 1-}
 	{-Defina HashTable como um tipo e faça operações sobre ele-}
 
+{-
 type HashTable = [(Int, Int)]
 
 --pega um elemento dado uma chave
@@ -32,6 +33,55 @@ remove ((k,v):as) key | k == key = as
 hasKey :: HashTable -> Int -> Bool
 hasKey [] key = False
 hasKey ((k,v):as) key = k == key || hasKey as key
+-}
+
+---------------------------------------------------------------------------------------------
+
+	{-Trabalho 3, Questão 1-}
+	{-Defina HashTable como um tipo e faça operações sobre ele-}
+	{-Versão com HASH FINITA, FUNÇÃO DE MÓDULO usando LINEAR PROBING, ATUALIZAÇÃO E DESLOCAMENTO-}
+	
+type HashTable = [(Int, Int)]
+
+baseExemplo :: HashTable
+baseExemplo = [(1,4),(11,4),(3,6),(4,2),(9,5),(8,3),(7,-1),(12,8),(16,3),(10,2)]
+		 
+{-base methods that check if the hash has the key or if it is full-}		 
+hasKey :: HashTable -> Int -> Bool
+hasKey [] kk = False
+hasKey ht kk = [k | (k, v) <- ht, k == kk] /= []
+
+full :: HashTable -> Int -> Int
+full [] kk = 0
+full ht kk = length [v | (k, v) <- ht, (k /= kk && v /= -1)]
+
+{-operation methods-}
+get :: HashTable -> Int -> Int
+get [] kk = -1
+get ht kk | hasKey ht kk == False = -1
+          | otherwise = snd(ht!!posGet ht kk 0)
+
+put :: HashTable -> Int -> Int -> HashTable
+put [] kk vv = [(kk,vv)]
+put ht kk vv | full ht kk == 10 = ht
+             | otherwise = take (posPut ht kk 0) ht ++ (kk, vv) : drop ((posPut ht kk 0)+1) ht
+
+remove :: HashTable -> Int -> HashTable
+remove [] kk = []
+remove ht kk | hasKey ht kk == False = ht
+             | otherwise = take (posGet ht kk 0) ht ++ (-1,-1) : drop ((posGet ht kk 0)+1) ht
+		
+{-additional methods to find the position-}			 
+posGet :: HashTable -> Int -> Int -> Int
+posGet [] kk mm = 0
+posGet ht kk mm | fst(ht!!(mod ((mod kk 10) + mm) 10)) == kk = mod ((mod kk 10) + mm) 10
+                | otherwise = posGet ht kk (mm + 3)
+
+posPut :: HashTable -> Int -> Int -> Int
+posPut [] kk mm = 0
+posPut ht kk mm | fst(ht!!(mod ((mod kk 10) + mm) 10)) == kk = mod ((mod kk 10) + mm) 10
+			    | hasKey ht kk == False && snd(ht!!(mod ((mod kk 10) + mm) 10)) == -1 = mod ((mod kk 10) + mm) 10
+				| otherwise = posPut ht kk (mm + 3)
 				  
 ---------------------------------------------------------------------------------------------
 
