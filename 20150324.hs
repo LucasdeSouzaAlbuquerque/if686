@@ -187,3 +187,64 @@ devolverC ls pp ll = [(p, l) | (p, l) <- ls, pp /= p || ll /= l]
 quickSort :: [Int] -> [Int]
 quickSort [] = []
 quickSort (pivot:list) = quickSort [y | y <- list, y < pivot] ++ [pivot] ++ quickSort [y | y <- list, y >= pivot]
+
+--Exercícios de Processamento de Texto
+
+getSpace :: String -> Int
+getSpace x | x == [] = 0
+           | (head x) == ' ' = 0
+           | otherwise = 1 + getSpace (tail x)
+
+getWord :: String -> String
+getWord x | x == [] = []
+          | otherwise = take (getSpace x) x
+
+dropWord :: String -> String
+dropWord x | x == [] = []
+           | otherwise = drop (getSpace x) x
+
+dropSpace :: String -> String
+dropSpace x | x == [] = []
+            | x!!0 /= ' ' = x
+            | otherwise = dropSpace (tail x)
+
+type Word = String
+
+splitWords :: String -> [Word]
+splitWords x | x == [] = []
+             | ((getSpace x) == 0 && (x!!0 /= ' ')) = (getWord x):[]
+             | otherwise = (getWord x) : (splitWords (dropSpace (dropWord x)))
+
+type Line = [Word]
+
+getLine :: Int -> [Word] -> Line
+getLine x y | x == 0 || y == [] = []
+            | length (head y) > x = Main.getLine x (tail y)
+            | otherwise = (head y) : Main.getLine (x - (length (head y))) (tail y)
+
+dropLine :: Int -> [Word] -> [Word]
+dropLine x y | x == 0 || y == [] = []
+             | length (last y) > x = dropLine x (init y)
+             | otherwise = (dropLine (x - (length (last y))) (init y)) ++ [(last y)]
+
+lineLength = 42
+
+splitLines :: [Word] -> [Line]
+splitLines x | x == [] = []
+             | otherwise = (Main.getLine lineLength x) : splitLines (drop 10 x)
+
+fill :: String -> [Line]
+fill x = splitLines (splitWords x)
+
+lineToWord :: [Line] -> [Word]
+lineToWord x | x == [] = []
+             | otherwise = (head x) ++ lineToWord (tail x)
+
+wordToString :: [Word] -> String
+wordToString x | x == [] = []
+               | (tail x) == [] = (head x)
+               | otherwise = (head x) ++ " " ++ wordToString (tail x)
+
+joinLines :: [Line] -> String
+joinLines x | x == [] = []
+            | otherwise = wordToString (lineToWord x)
