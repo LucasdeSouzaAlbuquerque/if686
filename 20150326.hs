@@ -7,6 +7,7 @@
 
 	{-Trabalho 3, Questão 1-}
 	{-Defina HashTable como um tipo e faça operações sobre ele-}
+	{-Upgrade sobre Hash com Lista-}
 	{-Versão com HASH FINITA, COM SUBSITUIÇÃO EM CONFLITO-}
 	
 {-
@@ -109,3 +110,33 @@ existe xs s | xs == [] = False
             | otherwise = ((head xs) == s || existe (tail xs) s)
 			
 ---------------------------------------------------------------------------------------------
+
+{-Exercicios Sala de Aula-}
+
+take :: [t] -> Int -> [t]
+take [] n = []
+take (a:as) 0 = []
+take (a:as) n = a : Main.take as (n-1)
+
+drop :: [t] -> Int -> [t]
+drop [] n = []
+drop (a:as) 0 = a : Main.drop as 0
+drop (a:as) n = Main.drop as (n-1)
+
+takeWhile :: [t] -> (t -> Bool) -> [t]
+takeWhile [] k = []
+takeWhile (a:as) k | k a == False = []
+                   | otherwise = a : Main.takeWhile as k
+
+dropWhile :: [t] -> (t -> Bool) -> [t]
+dropWhile [] k = []
+dropWhile (a:as) k | k a == False = a : Main.drop as 0
+                   | otherwise = Main.dropWhile as k
+
+-- order
+order :: (Ord a) => [a] -> [a]
+order [] = []
+order (pivot:rest) = (order [y | y <- rest, y < pivot]) ++ [pivot] ++ (oder [y | y <- rest, y >= pivot])
+
+-- group
+
