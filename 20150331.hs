@@ -138,3 +138,135 @@ mediana :: [Int] -> Int
 mediana [] = 0
 mediana ls | mod (length ls) 2 == 0 = div(ls!!(div (length ls) 2) + ls!!((div (length ls) 2) - 1)) 2
            | otherwise = ls!!(div (length ls) 2)
+		   ---------------------------------------------------------------------------------------------------
+{-Exercícios Aula Monitoria-}
+
+{-
+1 - Crie uma função que simule o comportamento de um AFD. 
+Ela deve receber uma cadeia de caracteres (apenas 0s e 1s) e as informações do autômato: 
+	sua lista de estados, lista de transições, estado inicial e lista de estados de aceitação.
+A função deve retornar um Bool indicando se a cadeia foi aceita ou não.
+-}
+
+--tipo que representa a transição
+type Trans = (Int, Int, String)
+
+--main e casamento de padrões simples
+afd :: String -> [Int] -> [Trans] -> Int -> [Int] -> Bool
+afd "" q t s f = exist s f
+afd a [] t s f = False
+afd a q [] s f = False
+afd a q t s [] = False
+afd a q t s f = exist s f || afd (drop 1 a) q t (nextState a s t) f
+
+--verifica se o estado atual está na lista de estados finais
+exist :: Int -> [Int] -> Bool
+exist n [] = False
+exist n (a:as) = n == a || exist n as
+
+--à partir da lista de transições, vai para o próximo estado
+nextState :: [Char] -> Int -> [Trans] -> Int
+nextState "" s (a:as) = s
+nextState c s [] = s
+nextState c s (a:as) | s == get1st(a) && [(c!!0)] == get3rd(a) = get2nd(a)
+                     | otherwise = nextState c s as
+					
+--pega o primeiro elemento de uma tupla de 3
+get1st :: Trans -> Int
+get1st (a,b,c) = a
+
+--pega o segundo elemento de uma tupla de 3
+get2nd :: Trans -> Int
+get2nd (a,b,c) = b
+ 
+--pega o terceiro elemento de uma tupla de 3
+get3rd :: Trans -> String
+get3rd (a,b,c) = c
+
+---------------------------------------------------------------------------------------------------
+
+{-
+2 - Implemente a função somatorioHexadecimal. 
+Essa função recebe uma lista de Strings onde cada elemento representa um numero na base hexadecimal 
+	e retorna uma String contendo o resultado em hexadecimal do somatório da primeira lista.
+-}
+
+--main do somatorio
+somatorioHexadecimal :: [String] -> String
+somatorioHexadecimal [] = ""
+somatorioHexadecimal (a:as) = conversaoIda(somaLista (a:as))
+
+--soma os elementos individuais da lista
+somaLista :: [String] -> Int
+somaLista [] = 0
+somaLista (a:as) = conversaoVolta(a) + somaLista(as)
+
+--converte de hexadecimal para int
+conversaoVolta :: String -> Int
+conversaoVolta "" = 0
+conversaoVolta s | s!!((length s)-1) == 'A' = 10 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == 'B' = 11 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == 'C' = 12 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == 'D' = 13 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == 'E' = 14 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == 'F' = 15 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == '0' = 0 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == '1' = 1 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == '2' = 2 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == '3' = 3 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == '4' = 4 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == '5' = 5 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == '6' = 6 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == '7' = 7 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == '8' = 8 + (conversaoVolta(take ((length s)-1) s))*16
+                 | s!!((length s)-1) == '9' = 9 + (conversaoVolta(take ((length s)-1) s))*16
+
+--converte de int para hexadecimal
+conversaoIda :: Int -> String
+conversaoIda 0 = ""
+conversaoIda k | mod k 16 == 10 = conversaoIda(div k 16) ++ ['A']
+               | mod k 16 == 11 = conversaoIda(div k 16) ++ ['B']
+               | mod k 16 == 12 = conversaoIda(div k 16) ++ ['C']
+               | mod k 16 == 13 = conversaoIda(div k 16) ++ ['D']
+               | mod k 16 == 14 = conversaoIda(div k 16) ++ ['E']
+               | mod k 16 == 15 = conversaoIda(div k 16) ++ ['F']
+			   | otherwise = conversaoIda(div k 16) ++ show(mod k 16)  
+			   
+---------------------------------------------------------------------------------------------------
+
+{-
+3 - Escreva uma função palindromoDecimal :: String -> String que, 
+	recebendo um número inteiro positivo N em hexadecimal (respresentado como um String), 
+		seja capaz de verificar se este número, transformado para a base decimal, 
+			é um palíndromo (não é permitido o uso da função reverse).
+-}
+
+--main
+palindromoDecimal :: String -> String
+palindromoDecimal "" = "0 - NAO-PALINDROMO"
+palindromoDecimal s | mod(length s) 2 == 0 && palinPar(conversaoVolta(s))[] = show(conversaoVolta(s)) ++ " - PALINDROMO"
+                    | mod(length s) 2 /= 0 && palinImpar(conversaoVolta(s))[] = show(conversaoVolta(s)) ++ " - PALINDROMO"
+					| otherwise = show(conversaoVolta(s)) ++ " - NAO-PALINDROMO"
+
+--calcula se um número de tamanho par é palindromo					
+palinPar :: Int -> [Int] -> Bool
+palinPar 0 [] = True
+palinPar 0 ls = False
+palinPar n ls | n >= 10 && n <= 100 && length(ls) == 0 = mod n 10 == div n 10
+              | potTen(length(ls)) >= n && mod n 10 == ls!!((length ls)-1) = palinPar (div n 10) (take ((length ls)-1) ls)
+              | otherwise = palinPar (div n 10) (ls++[(mod n 10)])
+			  
+--calcula se um número de tamanho impar é palindromo		
+palinImpar :: Int -> [Int] -> Bool
+palinImpar 0 [] = True
+palinImpar 0 ls = False
+palinImpar n ls | n < 10 && length(ls) == 0 = True
+                | potTen(length(ls)) >= n && mod n 10 == ls!!((length ls)-1) = palinImpar (div n 10) (take ((length ls)-1) ls)
+				| potTen(length(ls)) <= n && 10*potTen(length(ls)) >= n = palinImpar (div n 10) ls
+                | otherwise = palinImpar (div n 10) (ls++[(mod n 10)])
+		
+--gera potências de 10
+potTen :: Int -> Int
+potTen 0 = 0
+potTen 1 = 10
+potTen k = 10 * potTen(k-1)			
