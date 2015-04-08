@@ -138,5 +138,43 @@ order :: (Ord a) => [a] -> [a]
 order [] = []
 order (pivot:rest) = (order [y | y <- rest, y < pivot]) ++ [pivot] ++ (oder [y | y <- rest, y >= pivot])
 
--- group
+-- order
+order :: (Ord a) => [a] -> [a]
+order x | x == [] = []
+        | otherwise = (order [minor | minor <- (tail x), minor < (head x)]) ++ [head x] ++ (order [major | major <- (tail x), major >= (head x)])
+
+--métodos adicionais--
+agruparGet :: (Eq t) => [t] -> [(t, Int)]
+agruparGet x | x == [] = []
+      | otherwise = [((head x), 0)] ++ (agruparGet (tail x))
+
+count :: (Eq t) => [(t, Int)] -> t -> Int
+count x y | x == [] = 0
+          | fst (head x) == y = 1 + (count (tail x) y)
+          | otherwise = (count (tail x) y)
+
+add :: (Eq t) => [(t, Int)] -> [(t, Int)]
+add x | x == [] = []
+      | otherwise = (fst (head x), count x (fst (head x))) : add (tail x)
+
+removeChunk :: (Eq t) => [(t, Int)] -> t -> [(t, Int)]
+removeChunk x y | x == [] = []
+                | fst (head x) == y = removeChunk (tail x) y
+                | otherwise = (head x) : removeChunk (tail x) y
+
+agruparRemove :: (Eq t) => [(t, Int)] -> [(t, Int)]
+agruparRemove x | x == [] = []
+         | otherwise = (head x) : agruparRemove (removeChunk (tail x) (fst (head x)))
+
+mapFunction :: (Eq t) => (t -> u) -> [t] -> [u]
+mapFunction f x | x == [] = []
+                | otherwise = (f (head x)) : mapFunction f (tail x)
+
+concatenate :: (Eq t) => [[t]] -> [t]
+concatenate x | x == [] = []
+              | otherwise = (head x) ++ concatenate (tail x)
+
+agrupar :: (Eq t) => [[t]] -> [(t, Int)]
+agrupar x | x == [] = []
+          | otherwise = agruparRemove (add (concatenate (mapFunction (agruparGet) x)))
 

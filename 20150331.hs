@@ -269,4 +269,27 @@ palinImpar n ls | n < 10 && length(ls) == 0 = True
 potTen :: Int -> Int
 potTen 0 = 0
 potTen 1 = 10
-potTen k = 10 * potTen(k-1)			
+potTen k = 10 * potTen(k-1)		
+	
+---------------------------------------------------------------------------------------------------
+--Defina o tipo de matrizes e multiplique-as--
+
+-- multiplicaMatrizes
+type Vector = [Double]
+type Matrix = [Vector]
+
+multElement :: Matrix -> Matrix -> Int -> Int -> Int -> Double
+multElement m n a b c | m == [] || n == [] || b == -1 = 0
+                      | otherwise = (((m!!a)!!b) * ((n!!b)!!c)) + (multElement m n a (b - 1) c)
+
+multRow :: Matrix -> Matrix -> Int -> Int -> Vector
+multRow m n x y | m == [] || n == [] || y == (length m) = []
+                | otherwise = [multElement m n x (length m - 1) y] ++ (multRow m n x (y + 1))
+
+auxMatrix :: Matrix -> Matrix -> Int -> Matrix
+auxMatrix m n x | m == [] || n == [] || x == (length m) = []
+          | otherwise = [multRow m n x 0] ++ (auxMatrix m n (x + 1))
+
+multiplicaMatrizes :: Matrix -> Matrix -> Matrix
+multiplicaMatrizes a b | (length a) == 0 || (length b) == 0 = []
+                       | otherwise = auxMatrix a b 0
