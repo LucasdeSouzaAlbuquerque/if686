@@ -62,3 +62,39 @@ makeBool g = False : makeBool (tail(g))
 turnBool :: [Bool] -> Int -> [Bool]
 turnBool [] n = []
 turnBool b n = (take n b) ++ [True] ++ (drop (n+1) b)
+
+---
+
+import Data.Char
+
+{-1. member, que recebe um elemento e 
+	uma lista e indica se o elemento pertence a lista-}
+
+member :: Eq t => t -> [t] -> Bool
+member n as = foldr (||) False (map (==n) as) 
+
+{-2. union, que recebe duas listas e retorna uma lista 
+	representando a união das duas recebidas-}
+	
+union :: Eq t => [t] -> [t] -> [t]
+union as bs = foldr f [] (as++bs)
+
+f :: Eq t => t -> [t] -> [t]
+f a b | elem a b = b
+      | otherwise = [a] ++ b
+
+{-Defina uma função que, dada uma lista de Strings,
+	a transforma em uma lista de números onde cada 
+	número dessa lista corresponde à soma dos “valores” 
+	dos caracteres do String que aparece na mesma 
+	posição da lista de entrada.-}
+		  
+charSum :: [String] -> [Int]
+charSum as = foldr charAux [] as
+
+charAux :: String -> [Int] -> [Int]
+charAux l as = [(sumAll (map (\z -> z - ((ord 'a') - 1)) (map (ord) l)))] ++ as
+
+sumAll :: [Int] -> Int
+sumAll [] = 0
+sumAll (a:as) = a + sumAll as
