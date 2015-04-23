@@ -1,0 +1,16 @@
+SLIDES DA AULA 5
+
+mapsqrtRoot - Slide 7
+posicaoAlfabeto - Slide 7
+mapC - Slide 7
+
+arvoreBusca - Slide 16
+criaArvore - Slide 16
+
+listFilterSum - Slide 19
+inter - Slide 19
+diff - Slide 19
+
+map.filter - Slide 26
+
+mapfold - Slide 31
