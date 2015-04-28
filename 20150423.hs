@@ -117,3 +117,140 @@ geraFuncaoMenorCaminho :: Graph Int -> Int -> Int -> String
 geraFuncaoMenorCaminho (NilG) _ _ = ""
 geraFuncaoMenorCaminho g i e = (show i) ++ " " ++ (show e) ++ " - " ++ (show (minDist m i e (length m)))
                                where m = createMatrix g
+							   
+							   -- Exercícios
+{-
+Determine, sem usar o GHCi, os tipos das seguintes expressões:
+1) foldr (:)
+- foldr :: (a -> b -> b) -> b -> [a] -> b
+- (:) :: c -> [c] -> [c]
+- a = c
+- b = [c]
+- foldr (:) :: b -> [a] -> b
+foldr (:) :: [c] -> [c] -> [c]
+2) map.(.)
+- map :: (a -> b) -> [a] -> [b]
+- (.) :: (d -> e) -> (c -> d) -> (c -> e)
+- . :: (g -> h) -> (f -> g) -> (f -> h)
+- f = (d -> e)
+- g = (a -> b)
+- g = ((c -> d) -> (c -> e))
+- h = ([a] -> [b])
+- a = (c -> d)
+- b = (c -> e)
+map.(.) :: (f -> h)
+map.(.) :: ((d -> e) -> ([a] -> [b]))
+map.(.) :: ((d -> e) -> ([c -> d] -> [c -> e]))
+3) foldr (+).(.).map
+- foldr :: (a -> b -> b) -> b -> [a] -> b
+- (+) :: Num c => c -> c -> c
+- . :: (e -> f) -> (d -> e) -> (d -> f)
+- (.) :: (h -> i) -> (g -> h) -> (g -> i)
+- . :: (k -> l) -> (j -> k) -> (j -> l)
+- map :: (m -> n) -> [m] -> [n]
+---------- (.).map ----------
+- j = (m -> n)
+- k = (h -> i)
+- k = ([m] -> [n])
+- l = (g -> h) -> (g -> i)
+- h = [m]
+- i = [n]
+((.).map) :: (j -> l)
+((.).map) :: (m -> n) -> ((g -> h) -> (g -> i))
+((.).map) :: (m -> n) -> ((g -> [m]) -> (g -> [n]))
+---------- foldr (+) ----------
+- a = c
+- b = c
+foldr (+) :: (Num c) => c -> [c] -> c
+---------- (foldr (+)).((.).map) ----------
+- d = (m -> n)
+- e = ((g -> [m]) -> (g -> [n]))
+- e = (Num c) => c
+- f = (Num c) => [c] -> c
+- c = ((g -> [m]) -> (g -> [n]))
+(foldr (+)).((.).map) :: (d -> f)
+(foldr (+)).((.).map) :: (Num c) => (m -> n) -> [c] -> c
+(foldr (+)).((.).map) :: (Num ((g -> [m]) -> (g -> [n]))) => (m -> n) -> [(g -> [m]) -> (g -> [n])] -> ((g -> [m]) -> (g -> [n]))
+4) map.map.foldr
+- map :: (a -> b) -> [a] -> [b]
+- . :: (d -> e) -> (c -> d) -> (c -> e)
+- map :: (f -> g) -> [f] -> [g]
+- . :: (i -> j) -> (h -> i) -> (h -> j)
+- foldr :: (k -> l -> l) -> l -> [k] -> l
+---------- map.foldr ----------
+- h = (k -> l -> l)
+- i = (l -> [k] -> l)
+- i = (f -> g)
+- j = ([f] -> [g])
+- f = l
+- g = ([k] -> l)
+map.foldr :: (h -> j)
+map.foldr :: (k -> l -> l) -> ([f] -> [g])
+map.foldr :: (k -> l -> l) -> ([l] -> [[k] -> l])
+---------- map.(map.foldr) ----------
+- c = (k -> l -> l)
+- d = ([l] -> [[k] -> l])
+- d = (a -> b)
+- e = ([a] -> [b])
+- a = [l]
+- b = [[k] -> l]
+map.(map.foldr) :: (c -> e)
+map.(map.foldr) :: ((k -> l -> l) -> ([a] -> [b]))
+map.(map.foldr) :: ((k -> l -> l) -> ([[l]] -> [[[k] -> l]]))
+5) map.((.) (foldr (++) (foldr (++) [] [[1], [2]])))
+---------- (foldr (++) [] [[1], [2]]) ----------
+[1] :: Num t -> [t]
+[2] :: Num t -> [t]
+(foldr (++) [] [[1], [2]]) :: (Num t) => [t]
+---------- (foldr (++) (foldr (++) [] [[1], [2]])) ----------
+- foldr :: (a -> b -> b) -> b -> [a] -> b
+- b = [t]
+- a = [t]
+(foldr (++) (foldr (++) [] [[1], [2]])) :: [a] -> b
+(foldr (++) (foldr (++) [] [[1], [2]])) :: (Num t) => [[t]] -> [t]
+---------- (.) (foldr (++) (foldr (++) [] [[1], [2]])) ----------
+(.) :: (b0 -> c0) -> (a0 -> b0) -> (a0 -> c0)
+- a0 = t
+- b0 = [[t]]
+- c0 = [t]
+(.) (foldr (++) (foldr (++) [] [[1], [2]])) :: (Num t) => (a0 -> b0) -> (a0 -> c0)
+(.) (foldr (++) (foldr (++) [] [[1], [2]])) :: (Num t) => (t -> [[t]]) -> (t -> [t])
+---------- map.((.) (foldr (++) (foldr (++) [] [[1], [2]]))) ----------
+- map :: (c -> d) -> [c] -> [d]
+- . :: (f -> g) -> (e -> f) -> (e -> g)
+- e = (t -> [[t]])
+- f = (t -> [t])
+- f = (c -> d)
+- g = ([c] -> [d])
+- c = t
+- d = [t]
+map.((.) (foldr (++) (foldr (++) [] [[1], [2]]))) :: (Num t) => (t -> [[t]]) -> ([c] -> [d])
+map.((.) (foldr (++) (foldr (++) [] [[1], [2]]))) :: (Num t) => (t -> [[t]]) -> ([t] -> [[t]])
+6) (foldr).(.)$(!!)
+- foldr :: (a -> b -> b) -> b -> [a] -> b
+- . :: (d -> e) -> (c -> d) -> (c -> e)
+- (.) :: (g -> h) -> (f -> g) -> (f -> h)
+- $ :: (i -> j) -> i -> j
+- (!!) :: [k] -> Int -> k
+---------- (foldr).(.) ----------
+- c = (g -> h)
+- d = (f -> g) -> (f -> h)
+- d = (a -> b -> b)
+- e = (b -> [a] -> b)
+- (f -> g) = a
+- (f -> h) = (b -> b)
+- f = h = b
+(foldr).(.) :: (c -> e)
+(foldr).(.) :: (g -> h) -> (b -> [a] -> b)
+(foldr).(.) :: (g -> f) -> (f -> [f -> g] -> f)
+---------- (foldr).(.)$(!!) ----------
+- (i -> j) = (g -> f) -> (f -> [f -> g] -> f)
+- i = [k] -> Int -> k
+- i = (g -> f)
+- j = (f -> [f -> g] -> f)
+- g = [k]
+- f = Int -> k
+(foldr).(.)$(!!) :: j
+(foldr).(.)$(!!) :: (f -> [f -> g] -> f)
+(foldr).(.)$(!!) :: (Int -> k) -> [(Int -> k) -> [k]] -> (Int -> k)
+-}
